@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Memory Allocation Simulation</title>
+  <style>
+    /* CSS styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      margin-bottom: 20px;
+    }
+    table th, table td {
+      padding: 5px;
+      text-align: center;
+    }
+    #output {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    .button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Memory Allocation Simulation</h1>
+
+  <h2>Memory Blocks</h2>
+  <table id="memoryTable">
+    <tr>
+      <th>Block</th>
+      <th>Size</th>
+    </tr>
+    <tr>
+      <td>B1</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>B2</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>B3</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>B4</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>B5</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+  </table>
+
+  <h2>Processes</h2>
+  <table id="processTable">
+    <tr>
+      <th>Process</th>
+      <th>Size</th>
+    </tr>
+    <tr>
+      <td>P1</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>P2</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>P3</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>P4</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+    <tr>
+      <td>P5</td>
+      <td><input type="text" placeholder="Size" /></td>
+    </tr>
+  </table>
+
+  <button class="button" onclick="runFirstFit()">First Fit</button>
+  <button class="button" onclick="runBestFit()">Best Fit</button>
+  <button class="button" onclick="runWorstFit()">Worst Fit</button>
+
+  <h2>Output</h2>
+  <div id="output"></div>
+
+  <script>
+    // Run the First Fit simulation
+    function runFirstFit() {
+      var memoryTable = document.getElementById('memoryTable');
+      var processTable = document.getElementById('processTable');
+      var outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = ""; // Clear previous output
+
+      var memoryBlocks = [];
+      var processes = [];
+
+      // Get memory block sizes
+      for (var i = 1; i < memoryTable.rows.length; i++) {
+        var blockId = memoryTable.rows[i].cells[0].innerText;
+        var blockSize = parseInt(memoryTable.rows[i].cells[1].querySelector('input').value);
+        memoryBlocks.push({ id: blockId, size: blockSize, allocated: false, processId: "" });
+      }
+
+      // Get process sizes
+      for (var i = 1; i < processTable.rows.length; i++) {
+        var processId = processTable.rows[i].cells[0].innerText;
+        var processSize = parseInt(processTable.rows[i].cells[1].querySelector('input').value);
+        processes.push({ id: processId, size: processSize, allocated: false, blockId: "" });
+      }
+
+      // First Fit Algorithm
+      for (var i = 0; i < processes.length; i++) {
+        var process = processes[i];
+        for (var j = 0; j < memoryBlocks.length; j++) {
+          var block = memoryBlocks[j];
+          if (block.size >= process.size && !block.allocated) {
+            block.allocated = true;
+            block.processId = process.id;
+            process.allocated = true;
+            process.blockId = block.id;
+            break;
+          }
+        }
+      }
+
+      // Generate output
+      var output = "";
+      output += "<table>";
+      output += "<tr><th>Process</th><th>Size</th><th>Block</th></tr>";
+      for (var i = 0; i < processes.length; i++) {
+        var process = processes[i];
+        var blockId = process.allocated ? process.blockId : "N/A";
+        output += "<tr><td>" + process.id + "</td><td>" + process.size + "</td><td>" + blockId + "</td></tr>";
+      }
+      output += "</table>";
+
+      outputDiv.innerHTML = output;
+    }
+
+    // Run the Best Fit simulation
+    function runBestFit() {
+      var memoryTable = document.getElementById('memoryTable');
+      var processTable = document.getElementById('processTable');
+      var outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = ""; // Clear previous output
+
+      var memoryBlocks = [];
+      var processes = [];
+
+      // Get memory block sizes
+      for (var i = 1; i < memoryTable.rows.length; i++) {
+        var blockId = memoryTable.rows[i].cells[0].innerText;
+        var blockSize = parseInt(memoryTable.rows[i].cells[1].querySelector('input').value);
+        memoryBlocks.push({ id: blockId, size: blockSize, allocated: false, processId: "" });
+      }
+
+      // Get process sizes
+      for (var i = 1; i < processTable.rows.length; i++) {
+        var processId = processTable.rows[i].cells[0].innerText;
+        var processSize = parseInt(processTable.rows[i].cells[1].querySelector('input').value);
+        processes.push({ id: processId, size: processSize, allocated: false, blockId: "" });
+      }
+
+      // Best Fit Algorithm
+      for (var i = 0; i < processes.length; i++) {
+        var process = processes[i];
+        var bestFitIndex = -1;
+        for (var j = 0; j < memoryBlocks.length; j++) {
+          var block = memoryBlocks[j];
+          if (block.size >= process.size && !block.allocated) {
+            if (bestFitIndex === -1 || block.size < memoryBlocks[bestFitIndex].size) {
+              bestFitIndex = j;
+            }
+          }
+        }
+        if (bestFitIndex !== -1) {          var block = memoryBlocks[bestFitIndex];
+          block.allocated = true;
+          block.processId = process.id;
+          process.allocated = true;
+          process.blockId = block.id;
+        }
+      }
+
+      // Generate output
+      var output = "";
+      output += "<table>";
+      output += "<tr><th>Process</th><th>Size</th><th>Block</th></tr>";
+      for (var i = 0; i < processes.length; i++) {
+        var process = processes[i];
+        var blockId = process.allocated ? process.blockId : "N/A";
+        output += "<tr><td>" + process.id + "</td><td>" + process.size + "</td><td>" + blockId + "</td></tr>";
+      }
+      output += "</table>";
+
+      outputDiv.innerHTML = output;
+    }
+
+    // Run the Worst Fit simulation
+    function runWorstFit() {
+      var memoryTable = document.getElementById('memoryTable');
+      var processTable = document.getElementById('processTable');
+      var outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = ""; // Clear previous output
+
+      var memoryBlocks = [];
+      var processes = [];
+
+      // Get memory block sizes
+      for (var i = 1; i < memoryTable.rows.length; i++) {
+        var blockId = memoryTable.rows[i].cells[0].innerText;
+        var blockSize = parseInt(memoryTable.rows[i].cells[1].querySelector('input').value);
+        memoryBlocks.push({ id: blockId, size: blockSize, allocated: false, processId: "" });
+      }
+
+      // Get process sizes
+      for (var i = 1; i < processTable.rows.length; i++) {
+        var processId = processTable.rows[i].cells[0].innerText;
+        var processSize = parseInt(processTable.rows[i].cells[1].querySelector('input').value);
+        processes.push({ id: processId, size: processSize, allocated: false, blockId: "" });
+      }
+
+      // Worst Fit Algorithm
+      for (var i = 0; i < processes.length; i++) {
+        var process = processes[i];
+        var worstFitIndex = -1;
+        for (var j = 0; j < memoryBlocks.length; j++) {
+          var block = memoryBlocks[j];
+          if (block.size >= process.size && !block.allocated) {
+            if (worstFitIndex === -1 || block.size > memoryBlocks[worstFitIndex].size) {
+              worstFitIndex = j;
+            }
+          }
+        }
+        if (worstFitIndex !== -1) {
+          var block = memoryBlocks[worstFitIndex];
+          block.allocated = true;
+          block.processId = process.id;
+          process.allocated = true;
+          process.blockId = block.id;
+        }
+      }
+
+      // Generate output
+      var output = "";
+      output += "<table>";
+      output += "<tr><th>Process</th><th>Size</th><th>Block</th></tr>";
+      for (var i = 0; i < processes.length; i++) {
+        var process = processes[i];
+        var blockId = process.allocated ? process.blockId : "N/A";
+        output += "<tr><td>" + process.id + "</td><td>" + process.size + "</td><td>" + blockId + "</td></tr>";
+      }
+      output += "</table>";
+
+      outputDiv.innerHTML = output;
+    }
+  </script>
+</body>
+</html>
+
+         
